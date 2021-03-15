@@ -1,0 +1,27 @@
+{
+  "name": "budget-backend",
+  "version": "1.0.0",
+  "description": "App budget-backend",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://"
+  },
+  "keywords": [
+    "nodejs",
+    "expressjs"
+  ],
+  "author": "Rodolfo Cáceres",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "8.2.0",
+    "express": "4.17.1"
+  },
+  "devDependencies": {
+    "morgan": "1.10.0",
+    "nodemon": "2.0.7"
+  }
+}

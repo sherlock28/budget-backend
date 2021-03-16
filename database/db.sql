@@ -19,7 +19,7 @@ CREATE TABLE operations(
     id INT(11) NOT NULL AUTO_INCREMENT,
     concept VARCHAR(50) NOT NULL,
     amount FLOAT NOT NULL,
-    registred_date DATE NOT NULL,
+    date_registered DATE NOT NULL,
     type_operation_id INT(11),
     CONSTRAINT fk_type_operation FOREIGN KEY (type_operation_id) REFERENCES types_operations(id),
     PRIMARY KEY (id)

@@ -5,7 +5,7 @@ const control = {};
 control.showLast = async (req, res) => {
   try {
     const operations = await pool.query(
-      "SELECT * FROM operations ORDER BY registred_date DESC LIMIT 10 "
+      "SELECT * FROM operations ORDER BY date_registered DESC LIMIT 10 "
     );
 
     res.status(200).json({
@@ -22,6 +22,8 @@ control.showLast = async (req, res) => {
 };
 
 control.add = (req, res) => {
+  const { concept, amount, date_registered } = req.body;
+
   res.json({ message: "create operation" });
 };
 

@@ -81,8 +81,38 @@ control.delete = async (req, res) => {
   }
 };
 
-control.update = (req, res) => {
-  res.json({ message: "update operation" });
+control.update = async (req, res) => {
+  const { id } = req.params;
+  const { concept, amount, date_registered } = req.body;
+
+  const newOperation = {
+    concept,
+    amount,
+    date_registered,
+  };
+
+  try {
+    const resMysql = await pool.query(`UPDATE operations SET ? WHERE id='${id}'`, [newOperation]);
+    if (resMysql.affectedRows === 0) {
+      res.status(400).json({ message: "Id not found" });
+    } else {
+      newOperation.id = id;
+      res.status(201).json({
+        message: "Operation updated successfully",
+        data: newOperation,
+      });
+    }
+    
+  } catch (err) {
+    console.error(err.code);
+    console.error(err.sqlMessage);
+
+    res.status(500).json({
+      message: "Internal server error",
+      error_code: err.code,
+      sqlMessage: err.sqlMessage,
+    });
+  }
 };
 
 control.showEntries = (req, res) => {
@@ -94,8 +124,10 @@ control.showOutputs = (req, res) => {
 };
 
 control.showGetById = (req, res) => {
-  console.log(req.params.id);
-  res.json({ message: "show operation by ID" });
+ const { id } = req.params.id;
+
+ pool.query(`SELECT * FROM operations WHERE id=${id}`);
+ res.json({ message: "show operation by ID" });
 };
 
 module.exports = control;

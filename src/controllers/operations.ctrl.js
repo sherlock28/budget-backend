@@ -20,7 +20,7 @@ control.showLast = async (req, res) => {
     res.status(500).json({
       message: "Internal server error",
       error_code: err.code,
-      sqlMessage: err.sqlMessage,
+      sql_message: err.sqlMessage,
     });
   }
 };
@@ -46,7 +46,7 @@ control.add = (req, res) => {
         res.status(500).json({
           message: "Internal server error",
           error_code: err.code,
-          sqlMessage: err.sqlMessage,
+          sql_message: err.sqlMessage,
         });
       } else {
         newOperation.id = result.insertId;
@@ -76,7 +76,7 @@ control.delete = async (req, res) => {
     res.status(500).json({
       message: "Internal server error",
       error_code: err.code,
-      sqlMessage: err.sqlMessage,
+      sql_message: err.sqlMessage,
     });
   }
 };
@@ -92,7 +92,10 @@ control.update = async (req, res) => {
   };
 
   try {
-    const resMysql = await pool.query(`UPDATE operations SET ? WHERE id='${id}'`, [newOperation]);
+    const resMysql = await pool.query(
+      `UPDATE operations SET ? WHERE id='${id}'`,
+      [newOperation]
+    );
     if (resMysql.affectedRows === 0) {
       res.status(400).json({ message: "Id not found" });
     } else {
@@ -102,7 +105,6 @@ control.update = async (req, res) => {
         data: newOperation,
       });
     }
-    
   } catch (err) {
     console.error(err.code);
     console.error(err.sqlMessage);
@@ -110,7 +112,7 @@ control.update = async (req, res) => {
     res.status(500).json({
       message: "Internal server error",
       error_code: err.code,
-      sqlMessage: err.sqlMessage,
+      sql_message: err.sqlMessage,
     });
   }
 };
@@ -123,11 +125,33 @@ control.showOutputs = (req, res) => {
   res.json({ message: "show output operations" });
 };
 
-control.showGetById = (req, res) => {
- const { id } = req.params.id;
+control.showById = async (req, res) => {
+  const { id } = req.params;
 
- pool.query(`SELECT * FROM operations WHERE id=${id}`);
- res.json({ message: "show operation by ID" });
+  try {
+    const operation = await pool.query(
+      `SELECT * FROM operations WHERE id='${id}';`
+    );
+
+    if (operation.length === 0) {
+      res.status(400).json({ message: "Id not found" });
+    } else {
+      res.json({
+        data: {
+          operation: operation[0],
+        },
+      });
+    }
+  } catch (err) {
+    console.error(err.code);
+    console.error(err.sqlMessage);
+
+    res.status(500).json({
+      message: "Internal server error",
+      error_code: err.code,
+      sql_message: err.sqlMessage,
+    });
+  }
 };
 
 module.exports = control;

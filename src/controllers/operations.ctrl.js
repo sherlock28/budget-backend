@@ -117,8 +117,26 @@ control.update = async (req, res) => {
   }
 };
 
-control.showEntries = (req, res) => {
-  res.json({ message: "show entry operations" });
+control.showEntries = async (req, res) => {
+  try {
+    const operations = await pool.query(
+      "SELECT * FROM operations WHERE type_operation_id='1'"
+    );
+    res.json({
+      data: {
+        operations,
+      },
+    });
+  } catch (err) {
+    console.error(err.code);
+    console.error(err.sqlMessage);
+
+    res.status(500).json({
+      message: "Internal server error",
+      error_code: err.code,
+      sql_message: err.sqlMessage,
+    });
+  }
 };
 
 control.showOutputs = (req, res) => {

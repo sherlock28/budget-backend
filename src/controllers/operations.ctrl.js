@@ -15,8 +15,12 @@ control.showLast = async (req, res) => {
     });
   } catch (err) {
     console.error(err.code);
+    console.error(err.sqlMessage);
+
     res.status(500).json({
       message: "Internal server error",
+      error_code: err.code,
+      sqlMessage: err.sqlMessage,
     });
   }
 };
@@ -46,14 +50,35 @@ control.add = (req, res) => {
         });
       } else {
         newOperation.id = result.insertId;
-        res.json({ data: newOperation });
+        res.status(201).json({
+          message: "Operation saved successfully",
+          data: newOperation,
+        });
       }
     }
   );
 };
 
-control.delete = (req, res) => {
-  res.json({ message: "delete operation" });
+control.delete = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const resMysql = await pool.query(`DELETE FROM operations WHERE id=${id}`);
+    if (resMysql.affectedRows === 0) {
+      res.status(400).json({ message: "Id not found" });
+    } else {
+      res.json({ message: "Operation removed successfully" });
+    }
+  } catch (err) {
+    console.error(err.code);
+    console.error(err.sqlMessage);
+
+    res.status(500).json({
+      message: "Internal server error",
+      error_code: err.code,
+      sqlMessage: err.sqlMessage,
+    });
+  }
 };
 
 control.update = (req, res) => {

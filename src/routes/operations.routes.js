@@ -3,7 +3,7 @@ const control = require("../controllers/operations.ctrl");
 
 router.get("/", control.showLast);
 router.post("/", control.add);
-router.delete("/", control.delete);
+router.delete("/:id", control.delete);
 router.put("/", control.update);
 router.get("/entries", control.showEntries);
 router.get("/outputs", control.showOutputs);

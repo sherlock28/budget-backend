@@ -4,11 +4,12 @@
   "description": "App budget-backend",
   "main": "src/index.js",
   "scripts": {
-    "dev": "nodemon src/"
+    "dev": "nodemon src/",
+    "start": "node src/"
   },
   "repository": {
     "type": "git",
-    "url": "https://"
+    "url": "https://github.com/sherlock28/budget-backend.git"
   },
   "keywords": [
     "nodejs",
@@ -18,7 +19,8 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "8.2.0",
-    "express": "4.17.1"
+    "express": "4.17.1",
+    "mysql": "2.18.1"
   },
   "devDependencies": {
     "morgan": "1.10.0",

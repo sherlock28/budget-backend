@@ -14,7 +14,7 @@ module.exports = app => {
   app.use(morgan("dev"));
 
   // routes
-  app.use(require("../routes/budget.routes"));
+  app.use('/api/operations', require("../routes/operations.routes"));
 
   return app;
 };

@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require("dotenv");
+const cors = require('cors');
 const morgan = require("morgan");
 
 dotenv.config();
@@ -11,6 +12,7 @@ module.exports = app => {
 
   // middlewares
   app.use(express.json());
+  app.use(cors());
   app.use(morgan("dev"));
 
   // routes

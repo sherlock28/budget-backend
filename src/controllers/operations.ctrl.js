@@ -26,7 +26,9 @@ control.showLast = async (req, res) => {
 };
 
 control.add = (req, res) => {
-  const { concept, amount, date_registered, type_operation_id } = req.body;
+  const { concept, amount, date_registered, type_operation } = req.body;
+
+  const type_operation_id = type_operation === "Egreso" ? 2 : 1;
 
   const newOperation = {
     concept,
@@ -35,28 +37,24 @@ control.add = (req, res) => {
     type_operation_id,
   };
 
-  const resMySql = pool.query(
-    `INSERT INTO operations SET ?`,
-    [newOperation],
-    (err, result) => {
-      if (err) {
-        console.error(err.code);
-        console.error(err.sqlMessage);
+  pool.query(`INSERT INTO operations SET ?`, [newOperation], (err, result) => {
+    if (err) {
+      console.error(err.code);
+      console.error(err.sqlMessage);
 
-        res.status(500).json({
-          message: "Internal server error",
-          error_code: err.code,
-          sql_message: err.sqlMessage,
-        });
-      } else {
-        newOperation.id = result.insertId;
-        res.status(201).json({
-          message: "Operation saved successfully",
-          data: newOperation,
-        });
-      }
+      res.status(500).json({
+        message: "Internal server error",
+        error_code: err.code,
+        sql_message: err.sqlMessage,
+      });
+    } else {
+      newOperation.id = result.insertId;
+      res.status(201).json({
+        message: "Operation saved successfully",
+        data: newOperation,
+      });
     }
-  );
+  });
 };
 
 control.delete = async (req, res) => {

@@ -17,6 +17,7 @@ module.exports = app => {
 
   // routes
   app.use('/api/operations', require("../routes/operations.routes"));
+  app.use('/api/balances', require('../routes/balances.routes'));
 
   return app;
 };

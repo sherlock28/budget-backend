@@ -1,3 +1,4 @@
+DROP DATABASE IF EXISTS database_budget;
 CREATE DATABASE IF NOT EXISTS database_budget;
 
 USE database_budget;
@@ -26,3 +27,11 @@ CREATE TABLE operations(
 );
 
 DESCRIBE operations;
+
+CREATE TABLE balances(
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    last_balance FLOAT NOT NULL,
+    PRIMARY KEY (id)
+);
+
+DESCRIBE balances;

@@ -1,7 +1,13 @@
 const pool = require("../database");
+const {
+  updateBalance,
+  editBalanceUpdatedOperarion,
+  editBalanceDeletedOperarion,
+} = require("../services/balance.service");
 
 const control = {};
 
+/* ---------------------- SHOW_LAST ---------------------- */
 control.showLast = async (req, res) => {
   try {
     const operations = await pool.query(
@@ -24,7 +30,9 @@ control.showLast = async (req, res) => {
     });
   }
 };
+/* ------------------------------------------------------------ */
 
+/* ---------------------- ADD ---------------------- */
 control.add = (req, res) => {
   const { concept, amount, date_registered, type_operation } = req.body;
 
@@ -48,23 +56,39 @@ control.add = (req, res) => {
         sql_message: err.sqlMessage,
       });
     } else {
-      newOperation.id = result.insertId;
-      res.status(201).json({
-        message: "Operation saved successfully",
-        data: newOperation,
-      });
+      updateBalance(1, amount, type_operation).then(resMysql =>
+        res.status(201).json({
+          message: "Operation saved successfully",
+          data: newOperation,
+        })
+      );
     }
   });
 };
+/* ------------------------------------------------------------ */
 
+/* ---------------------- DELETE ---------------------- */
 control.delete = async (req, res) => {
   const { id } = req.params;
 
   try {
+    /* Se recupera el monto previo */
+    const operation = await pool.query(
+      `SELECT amount, type_operation_id from operations WHERE id='${id}'`
+    );
+    const amount = operation[0].amount;
+
+    /* Se recupera y convierte el id de la operacion a su descripcion*/
+    const type_operation =
+      operation[0].type_operation_id === 1 ? "Ingreso" : "Egreso";
+
+    /* Se borra la operacion de la db*/
     const resMysql = await pool.query(`DELETE FROM operations WHERE id=${id}`);
+
     if (resMysql.affectedRows === 0) {
       res.status(400).json({ message: "Id not found" });
     } else {
+      editBalanceDeletedOperarion(1, amount, type_operation);
       res.json({ message: "Operation removed successfully" });
     }
   } catch (err) {
@@ -78,9 +102,11 @@ control.delete = async (req, res) => {
     });
   }
 };
+/* ------------------------------------------------------------ */
 
+/* ---------------------- UPDATE ---------------------- */
 control.update = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params; //operationId
   const { concept, amount, date_registered } = req.body;
 
   const newOperation = {
@@ -90,6 +116,13 @@ control.update = async (req, res) => {
   };
 
   try {
+    /* Se recupera el monto previo */
+    const prevOperation = await pool.query(
+      `SELECT amount from operations WHERE id='${id}'`
+    );
+    const prevAmount = prevOperation[0].amount;
+
+    /* Se actualiza la operacion con los datos nuevos*/
     const resMysql = await pool.query(
       `UPDATE operations SET ? WHERE id='${id}'`,
       [newOperation]
@@ -97,10 +130,21 @@ control.update = async (req, res) => {
     if (resMysql.affectedRows === 0) {
       res.status(400).json({ message: "Id not found" });
     } else {
-      newOperation.id = id;
+      /* Se recupera la operacion con los datos actualizados*/
+      const operationUpdated = await pool.query(
+        `SELECT * from operations WHERE id='${id}'`
+      );
+      /* Se recupera y convierte el id de la operacion a su descripcion*/
+      const type_operation =
+        operationUpdated[0].type_operation_id === 1 ? "Ingreso" : "Egreso";
+
+      /* Se actualiza el balance */
+      await editBalanceUpdatedOperarion(1, prevAmount, amount, type_operation);
+
+      /* Se envia una respuesta al cliente */
       res.status(201).json({
         message: "Operation updated successfully",
-        data: newOperation,
+        data: { id, amount, type_operation },
       });
     }
   } catch (err) {
@@ -114,7 +158,9 @@ control.update = async (req, res) => {
     });
   }
 };
+/* ------------------------------------------------------------ */
 
+/* ---------------------- SHOW_ENTRIES ---------------------- */
 control.showEntries = async (req, res) => {
   try {
     const operations = await pool.query(
@@ -136,7 +182,9 @@ control.showEntries = async (req, res) => {
     });
   }
 };
+/* ------------------------------------------------------------ */
 
+/* ---------------------- SHOW_OUTPUTS ---------------------- */
 control.showOutputs = async (req, res) => {
   try {
     const operations = await pool.query(
@@ -158,7 +206,9 @@ control.showOutputs = async (req, res) => {
     });
   }
 };
+/* ------------------------------------------------------------ */
 
+/* ---------------------- SHOW_BY_ID ---------------------- */
 control.showById = async (req, res) => {
   const { id } = req.params;
 
@@ -187,5 +237,6 @@ control.showById = async (req, res) => {
     });
   }
 };
+/* ------------------------------------------------------------ */
 
 module.exports = control;

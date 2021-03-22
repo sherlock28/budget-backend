@@ -9,8 +9,8 @@ const updateBalance = async (id, amount, type_operation) => {
     let newBalance = 0;
 
     type_operation === "Ingreso"
-      ? (newBalance = last_balance + amount)
-      : (newBalance = last_balance - amount);
+      ? (newBalance = last_balance + parseFloat(amount))
+      : (newBalance = last_balance - parseFloat(amount));
 
     const resMysql = await pool.query(
       `UPDATE balances SET ? WHERE id='${id}'`,

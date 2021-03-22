@@ -208,35 +208,4 @@ control.showOutputs = async (req, res) => {
 };
 /* ------------------------------------------------------------ */
 
-/* ---------------------- SHOW_BY_ID ---------------------- */
-control.showById = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const operation = await pool.query(
-      `SELECT * FROM operations WHERE id='${id}';`
-    );
-
-    if (operation.length === 0) {
-      res.status(400).json({ message: "Id not found" });
-    } else {
-      res.json({
-        data: {
-          operation: operation[0],
-        },
-      });
-    }
-  } catch (err) {
-    console.error(err.code);
-    console.error(err.sqlMessage);
-
-    res.status(500).json({
-      message: "Internal server error",
-      error_code: err.code,
-      sql_message: err.sqlMessage,
-    });
-  }
-};
-/* ------------------------------------------------------------ */
-
 module.exports = control;

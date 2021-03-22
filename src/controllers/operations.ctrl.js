@@ -164,7 +164,7 @@ control.update = async (req, res) => {
 control.showEntries = async (req, res) => {
   try {
     const operations = await pool.query(
-      "SELECT * FROM operations WHERE type_operation_id='1'"
+      "SELECT * FROM operations WHERE type_operation_id='1' ORDER BY date_registered DESC"
     );
     res.json({
       data: {
@@ -188,7 +188,7 @@ control.showEntries = async (req, res) => {
 control.showOutputs = async (req, res) => {
   try {
     const operations = await pool.query(
-      "SELECT * FROM operations WHERE type_operation_id='2'"
+      "SELECT * FROM operations WHERE type_operation_id='2' ORDER BY date_registered DESC"
     );
     res.json({
       data: {

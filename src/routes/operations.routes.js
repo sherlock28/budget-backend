@@ -1,11 +1,22 @@
 const router = require("express").Router();
-const control = require("../controllers/operations.ctrl");
+const {
+  showLastOperations,
+  addOperation,
+  deleteOperation,
+  updateOperation,
+  showEntriesOperations,
+  showOutputsOperations
 
-router.get("/", control.showLast);
-router.post("/", control.add);
-router.delete("/:id", control.delete);
-router.put("/:id", control.update);
-router.get("/entries", control.showEntries);
-router.get("/outputs", control.showOutputs);
+} = require("../controllers/operations.ctrl");
+
+/* Se definen los endpoints para las operacines y 
+a cada uno se le asigna un contralador que 
+manejara la peticion */
+router.get("/", showLastOperations);
+router.post("/", addOperation);
+router.delete("/:id", deleteOperation);
+router.put("/:id", updateOperation);
+router.get("/entries", showEntriesOperations);
+router.get("/outputs", showOutputsOperations);
 
 module.exports = router;

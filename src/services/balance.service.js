@@ -1,19 +1,33 @@
+/* Se importa la conexion a la base de datos */
 const pool = require("../database");
 
 /* ---------------------- UPDATE_BALANCE ---------------------- */
-const updateBalance = async (id, amount, type_operation) => {
+/* Esta funcion actualiza el balance cuando una nueva operacion
+es creada */
+const editBalanceCreatedOperation = async (
+  idBalance,
+  amount,
+  type_operation
+) => {
   try {
-    const balance = await pool.query(`SELECT * from balances WHERE id='${id}'`);
-
-    const { last_balance } = balance[0];
     let newBalance = 0;
 
+    /* Se recupera el balance anterior */
+    const balance = await pool.query(
+      `SELECT * from balances WHERE id='${idBalance}'`
+    );
+    const { last_balance } = balance[0];
+
+    /* Se calcula el nuevo balance teniendo en cuanta que
+       tipo de operacion que fue creado */
     type_operation === "Ingreso"
       ? (newBalance = last_balance + parseFloat(amount))
       : (newBalance = last_balance - parseFloat(amount));
 
+    /* Se actualiza el balance en la db con el 
+        nuevo balance calculado */
     const resMysql = await pool.query(
-      `UPDATE balances SET ? WHERE id='${id}'`,
+      `UPDATE balances SET ? WHERE id='${idBalance}'`,
       [{ last_balance: newBalance }]
     );
     if (resMysql.affectedRows === 0) {
@@ -28,6 +42,8 @@ const updateBalance = async (id, amount, type_operation) => {
 
 /* ---------------------- EDIT_BALANCE  ---------------------- */
 /* ---------------- WHEN A OPERATION IS UPDATED  ---------------- */
+/* Esta funcion actualiza el balance cuando una operacion
+es editada */
 const editBalanceUpdatedOperarion = async (
   idBalance,
   prevAmount,
@@ -53,7 +69,7 @@ const editBalanceUpdatedOperarion = async (
       newBalance = last_balance + diff;
     }
 
-    /* Se actualiza el balance en la db*/
+    /* Se actualiza el balance en la db */
     const resMysql = await pool.query(
       `UPDATE balances SET ? WHERE id='${idBalance}'`,
       [{ last_balance: newBalance }]
@@ -69,9 +85,10 @@ const editBalanceUpdatedOperarion = async (
 };
 /* ------------------------------------------------------------ */
 
-
 /* ---------------------- EDIT_BALANCE  ---------------------- */
 /* ---------------- WHEN A OPERATION IS DELETED  ---------------- */
+/* Esta funcion actualiza el balance cuando una operacion
+es eliminada */
 const editBalanceDeletedOperarion = async (
   idBalance,
   amount,
@@ -99,10 +116,9 @@ const editBalanceDeletedOperarion = async (
       `UPDATE balances SET ? WHERE id='${idBalance}'`,
       [{ last_balance: newBalance }]
     );
-
     if (resMysql.affectedRows === 0) {
       return console.log("Id not found");
-    } 
+    }
   } catch (err) {
     console.error(err.code);
     console.error(err.sqlMessage);
@@ -110,6 +126,7 @@ const editBalanceDeletedOperarion = async (
 };
 /* ------------------------------------------------------------ */
 
+/* Se exportan la tres funciones que actulizan el balance */
 exports.editBalanceUpdatedOperarion = editBalanceUpdatedOperarion;
 exports.editBalanceDeletedOperarion = editBalanceDeletedOperarion;
-exports.updateBalance = updateBalance;
+exports.editBalanceCreatedOperation = editBalanceCreatedOperation;

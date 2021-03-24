@@ -1,3 +1,5 @@
+/* Exporta un archivo con las configuraciones 
+para conectarse a la base de datos */
 module.exports = {
     database: {
         host:  process.env.HOST,

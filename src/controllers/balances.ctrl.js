@@ -1,11 +1,22 @@
 const pool = require("../database");
 
+/* Se crea un objeto control al cual se le agregaran
+las funciones controladoras para las peticiones */
 const control = {};
 
+/* Esta funcion es la controladora para las peticiones al endpoint
+    [GET].../api/balances/:id y que permite obtener el balance 
+    desde la db */
 control.getBalance = async (req, res) => {
   try {
-    const { id } = req.params;
+    /* Se obtiene el id desde los parametros de 
+        la url del endpoint */
+    const { id } = req.params; //id del balance
+    
+    /* Se realiza la query para obtener el balance */
     const balance = await pool.query(`SELECT * from balances WHERE id='${id}'`);
+    
+    /* Se envia al cliente la respuesta con el balance obtenido */
     res.json({
       data: {
         balance: balance[0],

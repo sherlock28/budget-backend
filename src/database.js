@@ -2,8 +2,11 @@ const mysql = require("mysql");
 const { promisify } = require("util");
 const { database } = require("./keys");
 
+/* Se crea un pool de conexiones */
 const pool = mysql.createPool(database);
 
+/* Se obtiene la conexion y se verifica que no 
+haya habido error*/
 pool.getConnection((err, connection) => {
   if (err) {
     if (err.code === "PROTOCOL_CONNECTION_LOST") {
@@ -25,6 +28,7 @@ pool.getConnection((err, connection) => {
   return;
 });
 
+/* Permite que sea posible usar async/await con las querys sql */
 pool.query = promisify(pool.query);
 
 module.exports = pool;

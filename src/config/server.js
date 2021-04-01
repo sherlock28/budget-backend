@@ -22,6 +22,7 @@ module.exports = app => {
   /* Se configura las rutas o endpoints */
   app.use("/api/operations", require("../routes/operations.routes"));
   app.use("/api/balances", require("../routes/balances.routes"));
+  app.use("/api/users", require("../routes/users.routes"));
 
   /* Se retorna la app express ya configurada */
   return app;

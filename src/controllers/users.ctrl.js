@@ -66,8 +66,8 @@ control.signin = async (req, res) => {
           user_id: user[0].id,
           email: user[0].email,
         },
-        process.env.SECRET_KEY || "othersecretkey",
-        { expiresIn: 86400 }
+        process.env.TOKEN_KEY,
+        { expiresIn: 86400}
       ); // expira en 1 dia
 
       /* Se guarda el token generado para el usuario en la db */

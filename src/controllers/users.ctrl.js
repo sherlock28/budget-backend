@@ -86,7 +86,7 @@ control.signin = async (req, res) => {
           } else {
             /* Se envia el token en la propiedad 'authorization' del header de la respuesta */
             res.status(200).header("authorization", token).json({
-              message: "Is authenticated"
+              message: "You are authenticated",
             });
           }
         }
@@ -95,8 +95,31 @@ control.signin = async (req, res) => {
   }
 };
 
-control.signout = (req, res) => {
-  res.send("signout");
+control.signout = async (req, res) => {
+  /* Se obtiene su token recibido en el header del request */
+  const token = req.header("authorization");
+
+  try {
+    /* Se busca en la db a que session pertenece el token */
+    const session = await pool.query(
+      `SELECT * FROM sessions WHERE token='${token}'`
+    );
+    if (session.length === 0) {
+      res.status(400).json({ error: "Invalid token" });
+    } else {
+      /* Se elimina la session de la db*/
+      await pool.query(`DELETE FROM sessions WHERE token='${token}'`);
+      res.json({ message: "You are sign out" });
+    }
+  } catch (err) {
+    /* Si ocurrio un error se envia una respuesta al 
+        cliente con el error */
+    res.status(500).json({
+      message: "Internal server error",
+      error_code: err.code,
+      sql_message: err.sqlMessage,
+    });
+  }
 };
 
 module.exports = control;

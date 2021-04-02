@@ -16,7 +16,10 @@ module.exports = app => {
   /* Se configura los middlewares */
   app.use(express.json());
   app.use(cors());
-  app.use(morgan("dev"));
+
+  if(process.env.NODE_ENV === 'development') {
+    app.use(morgan("dev"));
+  }
 
   /* --------------- ROUTES --------------- */
   /* Se configura las rutas o endpoints */

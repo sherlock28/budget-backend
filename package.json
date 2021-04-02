@@ -4,7 +4,7 @@
   "description": "App budget-backend",
   "main": "src/index.js",
   "scripts": {
-    "dev": "nodemon src/",
+    "dev": "NODE_ENV=development nodemon src/",
     "start": "node src/"
   },
   "repository": {

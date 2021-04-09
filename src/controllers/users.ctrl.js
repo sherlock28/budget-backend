@@ -40,6 +40,7 @@ control.signup = async (req, res) => {
 };
 
 control.signin = async (req, res) => {
+  console.log(req.body.email, req.body.password);
   /* Se verifica el usuario con el email recibido esta registrado*/
   const user = await pool.query(
     `SELECT * FROM users WHERE email='${req.body.email}'`
@@ -47,7 +48,7 @@ control.signin = async (req, res) => {
 
   if (user.length === 0) {
     res.status(400).json({
-      message: "Auth failed, email not found",
+      message: "Credentials are invalid",
     });
   } else {
     /* Se llama la funcion validatePassword para comprobar que password
@@ -58,7 +59,7 @@ control.signin = async (req, res) => {
     );
 
     if (!isCorrectPass) {
-      res.status(400).json({ message: "Invalid password" });
+      res.status(400).json({ message: "Credentials are invalid" });
     } else {
       /* Se genera el token por medio de la funcion sign de jwt */
       const token = jwt.sign(
@@ -67,7 +68,7 @@ control.signin = async (req, res) => {
           email: user[0].email,
         },
         process.env.TOKEN_KEY,
-        { expiresIn: 86400}
+        { expiresIn: 86400 }
       ); // expira en 1 dia
 
       /* Se guarda el token generado para el usuario en la db */
@@ -85,9 +86,16 @@ control.signin = async (req, res) => {
             });
           } else {
             /* Se envia el token en la propiedad 'authorization' del header de la respuesta */
-            res.status(200).header("authorization", token).json({
-              message: "You are authenticated",
-            });
+            // "Access-Control-Expose-Headers","Authorization"
+            res
+              .status(200)
+              .header({
+                authorization: token,
+                "Access-Control-Expose-Headers": "Authorization",
+              })
+              .json({
+                message: "You are authenticated",
+              });
           }
         }
       );

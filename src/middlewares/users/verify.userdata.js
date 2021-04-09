@@ -10,18 +10,18 @@ const ValidateFieldUser = (req, res, next) => {
     const { email, password, confirmpass } = req.body;
 
     if (email.length == 0) {
-        res.status(400).json({ error: 'Email is required' });
+        res.status(400).json({ message: 'Email is required' });
         return;
     }
 
     if (password.length == 0) {
-        res.status(400).json({ error: 'Password is required' });
+        res.status(400).json({ message: 'Password is required' });
         return;
     }
 
     if(email.toString().match(emailRegex) === null) {
         res.status(400).json({
-            error: 'Invalid email'
+            message: 'Invalid email'
         });
         return;
     }

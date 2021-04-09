@@ -35,7 +35,7 @@ control.signup = async (req, res) => {
       }
     );
   } else {
-    res.status(400).json({ error: "The email is already in use" });
+    res.status(400).json({ message: "The email is already in use" });
   }
 };
 
@@ -47,7 +47,7 @@ control.signin = async (req, res) => {
 
   if (user.length === 0) {
     res.status(400).json({
-      error: "Auth failed, email not found",
+      message: "Auth failed, email not found",
     });
   } else {
     /* Se llama la funcion validatePassword para comprobar que password
@@ -58,7 +58,7 @@ control.signin = async (req, res) => {
     );
 
     if (!isCorrectPass) {
-      res.status(400).json({ error: "Invalid password" });
+      res.status(400).json({ message: "Invalid password" });
     } else {
       /* Se genera el token por medio de la funcion sign de jwt */
       const token = jwt.sign(
@@ -105,7 +105,7 @@ control.signout = async (req, res) => {
       `SELECT * FROM sessions WHERE token='${token}'`
     );
     if (session.length === 0) {
-      res.status(400).json({ error: "Invalid token" });
+      res.status(400).json({ message: "Invalid token" });
     } else {
       /* Se elimina la session de la db*/
       await pool.query(`DELETE FROM sessions WHERE token='${token}'`);

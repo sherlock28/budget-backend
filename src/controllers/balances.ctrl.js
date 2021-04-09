@@ -12,14 +12,12 @@ control.getBalance = async (req, res) => {
     /* Se obtiene el id desde los parametros de 
         la url del endpoint */
     const { id } = req.params; //id del balance
-    
     /* Se realiza la query para obtener el balance */
     const balance = await pool.query(`SELECT * from balances WHERE id='${id}'`);
-    
     /* Se envia al cliente la respuesta con el balance obtenido */
     res.json({
       data: {
-        balance: balance[0],
+        balance,
       },
     });
   } catch (err) {

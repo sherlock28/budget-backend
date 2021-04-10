@@ -36,7 +36,7 @@ control.signup = async (req, res) => {
     await pool.query(`INSERT INTO balances SET ?`,[{ last_balance: 0, user_id }]);
 
     /* Se envia al cliente la respuesta confirmando 
-              el registro del usuario */
+        el registro del usuario */
     res.status(201).json({
       message: "User created successfully",
     });
@@ -47,7 +47,6 @@ control.signup = async (req, res) => {
 };
 
 control.signin = async (req, res) => {
-  console.log(req.body.email, req.body.password);
   /* Se verifica el usuario con el email recibido esta registrado*/
   const user = await pool.query(
     `SELECT * FROM users WHERE email='${req.body.email}'`

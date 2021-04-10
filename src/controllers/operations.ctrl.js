@@ -87,7 +87,7 @@ control.addOperation = (req, res) => {
       });
     } else {
       /* Se actualiza el balance usando el monto de operacion registrada */
-      editBalanceCreatedOperation(1, amount, type_operation).then(resMysql =>
+      editBalanceCreatedOperation(userId, amount, type_operation).then(resMysql =>
         /* Se envia al cliente la respuesta con los datos 
             de la operacion registrada */
         res.status(201).json({
@@ -112,11 +112,12 @@ control.deleteOperation = async (req, res) => {
   try {
     /* Se recupera desde la db la operacion a eliminar */
     const operation = await pool.query(
-      `SELECT amount, type_operation_id from operations WHERE id='${idOperation}'`
+      `SELECT amount, type_operation_id, user_id from operations WHERE id='${idOperation}'`
     );
     /* Se recupera el monto de la operacion a eliminar */
     const amount = operation[0].amount;
     /* Se recupera el user_id de la operacion a eliminar */
+    console.log(operation[0].user_id)
     const user_id = operation[0].user_id;
 
     /* Se calcula la description correspondiente al tipo de operacion */
@@ -139,9 +140,6 @@ control.deleteOperation = async (req, res) => {
       res.json({ message: "Operation removed successfully" });
     }
   } catch (err) {
-    console.error(err.code);
-    console.error(err.sqlMessage);
-
     /* Si ocurrio un error se envia una respuesta al 
         cliente con el error */
     res.status(500).json({
@@ -173,10 +171,12 @@ control.updateOperation = async (req, res) => {
     date_registered,
   };
 
+  console.log(idOperation, concept, amount, date_registered);
+
   try {
     /* Se recupera desde la db la operacion a actualizar */
     const prevOperation = await pool.query(
-      `SELECT amount from operations WHERE id='${idOperation}'`
+      `SELECT amount, user_id from operations WHERE id='${idOperation}'`
     );
     /* Se recupera el monto previo de la operacion a actualizar */
     const prevAmount = prevOperation[0].amount;
@@ -213,13 +213,10 @@ control.updateOperation = async (req, res) => {
       /* Se envia una respuesta al cliente */
       res.status(201).json({
         message: "Operation updated successfully",
-        data: { id, amount, type_operation },
+        data: { id: idOperation, amount, type_operation },
       });
     }
   } catch (err) {
-    console.error(err.code);
-    console.error(err.sqlMessage);
-
     /* Si ocurrio un error se envia una respuesta al 
         cliente con el error */
     res.status(500).json({

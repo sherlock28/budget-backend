@@ -44,8 +44,8 @@ const editBalanceCreatedOperation = async (
 /* ---------------- WHEN A OPERATION IS UPDATED  ---------------- */
 /* Esta funcion actualiza el balance cuando una operacion
 es editada */
-const editBalanceUpdatedOperarion = async (
-  idBalance,
+const editBalanceUpdatedOperation = async (
+  user_id,
   prevAmount,
   newAmount,
   type_operation
@@ -55,7 +55,7 @@ const editBalanceUpdatedOperarion = async (
 
     /* Se recupera el balance anterior */
     const balance = await pool.query(
-      `SELECT * from balances WHERE id='${idBalance}'`
+      `SELECT * from balances WHERE user_id='${user_id}'`
     );
     const { last_balance } = balance[0];
 
@@ -71,7 +71,7 @@ const editBalanceUpdatedOperarion = async (
 
     /* Se actualiza el balance en la db */
     const resMysql = await pool.query(
-      `UPDATE balances SET ? WHERE id='${idBalance}'`,
+      `UPDATE balances SET ? WHERE user_id='${user_id}'`,
       [{ last_balance: newBalance }]
     );
 
@@ -89,8 +89,8 @@ const editBalanceUpdatedOperarion = async (
 /* ---------------- WHEN A OPERATION IS DELETED  ---------------- */
 /* Esta funcion actualiza el balance cuando una operacion
 es eliminada */
-const editBalanceDeletedOperarion = async (
-  idBalance,
+const editBalanceDeletedOperation = async (
+  user_id,
   amount,
   type_operation
 ) => {
@@ -99,7 +99,7 @@ const editBalanceDeletedOperarion = async (
 
     /* Se recupera el balance anterior */
     const balance = await pool.query(
-      `SELECT * from balances WHERE id='${idBalance}'`
+      `SELECT * from balances WHERE user_id='${user_id}'`
     );
     const { last_balance } = balance[0];
 
@@ -113,7 +113,7 @@ const editBalanceDeletedOperarion = async (
 
     /* Se actualiza el balance en la db*/
     const resMysql = await pool.query(
-      `UPDATE balances SET ? WHERE id='${idBalance}'`,
+      `UPDATE balances SET ? WHERE user_id='${user_id}'`,
       [{ last_balance: newBalance }]
     );
     if (resMysql.affectedRows === 0) {
@@ -127,6 +127,6 @@ const editBalanceDeletedOperarion = async (
 /* ------------------------------------------------------------ */
 
 /* Se exportan la tres funciones que actulizan el balance */
-exports.editBalanceUpdatedOperarion = editBalanceUpdatedOperarion;
-exports.editBalanceDeletedOperarion = editBalanceDeletedOperarion;
+exports.editBalanceUpdatedOperation = editBalanceUpdatedOperation;
+exports.editBalanceDeletedOperation = editBalanceDeletedOperation;
 exports.editBalanceCreatedOperation = editBalanceCreatedOperation;

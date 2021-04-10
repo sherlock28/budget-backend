@@ -25,15 +25,22 @@ control.signup = async (req, res) => {
             error_code: err.code,
             sql_message: err.sqlMessage,
           });
-        } else {
-          /* Se envia al cliente la respuesta confirmando 
-              el registro del usuario */
-          res.status(201).json({
-            message: "User created successfully",
-          });
         }
       }
     );
+
+    const newUser = await pool.query(
+      `SELECT id FROM users WHERE email='${email}'`
+    );
+    const user_id = newUser[0].id;
+    await pool.query(`INSERT INTO balances SET ?`,[{ last_balance: 0, user_id }]);
+
+    /* Se envia al cliente la respuesta confirmando 
+              el registro del usuario */
+    res.status(201).json({
+      message: "User created successfully",
+    });
+
   } else {
     res.status(400).json({ message: "The email is already in use" });
   }

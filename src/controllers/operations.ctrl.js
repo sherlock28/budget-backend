@@ -3,8 +3,8 @@ permitiran actulizar el balance en cada caso */
 const pool = require("../database");
 const {
   editBalanceCreatedOperation,
-  editBalanceUpdatedOperarion,
-  editBalanceDeletedOperarion,
+  editBalanceUpdatedOperation,
+  editBalanceDeletedOperation,
 } = require("../services/balance.service");
 
 /* Se crea un objeto control al cual se le agregaran
@@ -17,9 +17,12 @@ const control = {};
     operaciones registradas en la db de acuerdo a la fecha */
 control.showLastOperations = async (req, res) => {
   try {
+    /* Se obtiene el id del usuario desde los parametros de 
+        la url del endpoint */
+    const { userId } = req.params;
     /* Se realiza la query para obtener las operaciones */
     const operations = await pool.query(
-      "SELECT * FROM operations ORDER BY date_registered DESC LIMIT 10 "
+      `SELECT * FROM operations ORDER BY date_registered DESC LIMIT 10 WHERE user_id=${userId}`
     );
     /* Se envia al cliente la respuesta con las operationes obtenidas */
     res.status(200).json({
@@ -47,6 +50,9 @@ control.showLastOperations = async (req, res) => {
     [POST].../api/operation y que permite registrar en la db una 
     nueva operacion */
 control.addOperation = (req, res) => {
+  /* Se obtiene el id del usuario desde los parametros de 
+      la url del endpoint */
+  const { userId } = req.params;
   /* Se obtienen desde el body de la peticion los datos 
       de la operacion a registrar */
   const { concept, amount, date_registered, type_operation } = req.body;
@@ -63,6 +69,7 @@ control.addOperation = (req, res) => {
     amount,
     date_registered,
     type_operation_id,
+    user_id: userId,
   };
 
   /* Se realiza la query para registrar la operacion */
@@ -100,29 +107,33 @@ control.addOperation = (req, res) => {
 control.deleteOperation = async (req, res) => {
   /* Se obtiene el id desde los parametros de 
       la url del endpoint */
-  const { id } = req.params; //id de la operacion
+  const { idOperation } = req.params; //id de la operacion
 
   try {
     /* Se recupera desde la db la operacion a eliminar */
     const operation = await pool.query(
-      `SELECT amount, type_operation_id from operations WHERE id='${id}'`
+      `SELECT amount, type_operation_id from operations WHERE id='${idOperation}'`
     );
     /* Se recupera el monto de la operacion a eliminar */
     const amount = operation[0].amount;
+    /* Se recupera el user_id de la operacion a eliminar */
+    const user_id = operation[0].user_id;
 
     /* Se calcula la description correspondiente al tipo de operacion */
     const type_operation =
       operation[0].type_operation_id === 1 ? "Ingreso" : "Egreso";
 
     /* Se elimina la operacion de la db */
-    const resMysql = await pool.query(`DELETE FROM operations WHERE id=${id}`);
+    const resMysql = await pool.query(
+      `DELETE FROM operations WHERE id=${idOperation}`
+    );
 
     if (resMysql.affectedRows === 0) {
       res.status(400).json({ message: "Id not found" });
     } else {
       /* Se actualiza el balance usando el monto y el tipo de la  
           operacion eliminada */
-      editBalanceDeletedOperarion(1, amount, type_operation);
+      editBalanceDeletedOperation(user_id, amount, type_operation);
       /* Se envia al cliente la respuesta confirmando 
           la eliminacion de la operacion*/
       res.json({ message: "Operation removed successfully" });
@@ -149,7 +160,7 @@ control.deleteOperation = async (req, res) => {
 control.updateOperation = async (req, res) => {
   /* Se obtiene el id desde los parametros de 
       la url del endpoint */
-  const { id } = req.params; //id de la operacion
+  const { idOperation } = req.params; //id de la operacion
 
   /* Se obtienen desde el body de la peticion los datos 
       de la operacion a actualizar */
@@ -165,14 +176,16 @@ control.updateOperation = async (req, res) => {
   try {
     /* Se recupera desde la db la operacion a actualizar */
     const prevOperation = await pool.query(
-      `SELECT amount from operations WHERE id='${id}'`
+      `SELECT amount from operations WHERE id='${idOperation}'`
     );
     /* Se recupera el monto previo de la operacion a actualizar */
     const prevAmount = prevOperation[0].amount;
+    /* Se recupera el user_id de la operacion a actualizar */
+    const user_id = prevOperation[0].user_id;
 
     /* Se actualiza la operacion con los datos nuevos */
     const resMysql = await pool.query(
-      `UPDATE operations SET ? WHERE id='${id}'`,
+      `UPDATE operations SET ? WHERE id='${idOperation}'`,
       [newOperation]
     );
     /* Si no se encontro una operacion con el id consultado se envia 
@@ -182,7 +195,7 @@ control.updateOperation = async (req, res) => {
     } else {
       /* Se recupera la operacion con los datos ya actualizados */
       const operationUpdated = await pool.query(
-        `SELECT * from operations WHERE id='${id}'`
+        `SELECT * from operations WHERE id='${idOperation}'`
       );
       /* Se calcula la description correspondiente al tipo de operacion */
       const type_operation =
@@ -190,7 +203,12 @@ control.updateOperation = async (req, res) => {
 
       /* Se actualiza el balance usando el monto previo de la operacion,
           su monto nuevo y su tipo */
-      await editBalanceUpdatedOperarion(1, prevAmount, amount, type_operation);
+      await editBalanceUpdatedOperation(
+        user_id,
+        prevAmount,
+        amount,
+        type_operation
+      );
 
       /* Se envia una respuesta al cliente */
       res.status(201).json({
@@ -219,9 +237,12 @@ control.updateOperation = async (req, res) => {
     operaciones de tipo "Ingreso" */
 control.showEntriesOperations = async (req, res) => {
   try {
+    /* Se obtiene el id del usuario desde los parametros de 
+        la url del endpoint */
+    const { userId } = req.params;
     /* Se realiza la query para obtener las operaciones */
     const operations = await pool.query(
-      "SELECT * FROM operations WHERE type_operation_id='1' ORDER BY date_registered DESC"
+      `SELECT * FROM operations WHERE type_operation_id='1' AND user_id='${userId}' ORDER BY date_registered DESC`
     );
     /* Se envia al cliente la respuesta con las operationes obtenidas */
     res.json({
@@ -250,9 +271,12 @@ control.showEntriesOperations = async (req, res) => {
     operaciones de tipo "Egreso" */
 control.showOutputsOperations = async (req, res) => {
   try {
+    /* Se obtiene el id del usuario desde los parametros de 
+        la url del endpoint */
+    const { userId } = req.params;
     /* Se realiza la query para obtener las operaciones */
     const operations = await pool.query(
-      "SELECT * FROM operations WHERE type_operation_id='2' ORDER BY date_registered DESC"
+      `SELECT * FROM operations WHERE type_operation_id='2' AND user_id='${userId}' ORDER BY date_registered DESC`
     );
     /* Se envia al cliente la respuesta con las operationes obtenidas */
     res.json({

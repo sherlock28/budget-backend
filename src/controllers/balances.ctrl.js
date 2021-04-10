@@ -9,11 +9,13 @@ const control = {};
     desde la db */
 control.getBalance = async (req, res) => {
   try {
-    /* Se obtiene el id desde los parametros de 
+    /* Se obtiene el id del usuario desde los parametros de 
         la url del endpoint */
-    const { id } = req.params; //id del balance
+    const { userId } = req.params;
     /* Se realiza la query para obtener el balance */
-    const balance = await pool.query(`SELECT * from balances WHERE id='${id}'`);
+    const balance = await pool.query(
+      `SELECT * from balances WHERE user_id='${userId}'`
+    );
     /* Se envia al cliente la respuesta con el balance obtenido */
     res.json({
       data: {

@@ -22,7 +22,7 @@ control.showLastOperations = async (req, res) => {
     const { userId } = req.params;
     /* Se realiza la query para obtener las operaciones */
     const operations = await pool.query(
-      `SELECT * FROM operations ORDER BY date_registered DESC LIMIT 10 WHERE user_id=${userId}`
+      `SELECT * FROM operations WHERE user_id='${userId}' ORDER BY date_registered DESC LIMIT 10`
     );
     /* Se envia al cliente la respuesta con las operationes obtenidas */
     res.status(200).json({

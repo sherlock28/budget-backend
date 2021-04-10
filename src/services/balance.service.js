@@ -118,7 +118,21 @@ const editBalanceDeletedOperation = async (user_id, amount, type_operation) => {
 };
 /* ------------------------------------------------------------ */
 
+/* ---------------------- CREATE_BALANCE  ---------------------- */
+/* ---------------- WHEN AN USER IS CREATED  ---------------- */
+/* Esta funcion crean un registro de balance cuando un usuario
+es creado */
+const createBalance = async (email) => {
+  const userSaved = await pool.query(
+    `SELECT id FROM users WHERE email='${email}'`
+  );
+  const user_id = userSaved[0].id;
+  await pool.query(`INSERT INTO balances SET ?`,[{ last_balance: 0, user_id }]);
+}
+
 /* Se exportan la tres funciones que actulizan el balance */
 exports.editBalanceUpdatedOperation = editBalanceUpdatedOperation;
 exports.editBalanceDeletedOperation = editBalanceDeletedOperation;
 exports.editBalanceCreatedOperation = editBalanceCreatedOperation;
+exports.createBalance = createBalance;
+

@@ -26,14 +26,14 @@ const TokenValidation = async (req, res, next) => {
     /* Si la consulta anterio devuelve null significa que el token no pertece al  usuario o bien que el usuario no esta logueado y por lo tanto no tiene su token registrado en la db */
     if (session == null) {
       return res.status(401).json({
-        error: "Access denied",
+        message: "Access denied",
       });
     } 
     /* Para pasar a al siguiente middleware */
     next();
   } catch (err) {
     return res.status(401).json({
-      error: "Invalid token",
+      message: "Invalid token",
     });
   }
 };

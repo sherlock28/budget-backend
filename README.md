@@ -10,6 +10,7 @@ _Primero debe ejecutar el script sql que creara la base de datos, sus tablas y a
 
 _Una vez se haya completado la creacion de la basa de datos debe crear el archivo .env en la raiz del proyecto con las siguientes variables de entorno:_
 
+- NODE_ENV=development
 - PORT=4000
 - HOST=localhost
 - USER_DB=your-user-db

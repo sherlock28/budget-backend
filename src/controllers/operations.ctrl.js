@@ -117,7 +117,6 @@ control.deleteOperation = async (req, res) => {
     /* Se recupera el monto de la operacion a eliminar */
     const amount = operation[0].amount;
     /* Se recupera el user_id de la operacion a eliminar */
-    console.log(operation[0].user_id)
     const user_id = operation[0].user_id;
 
     /* Se calcula la description correspondiente al tipo de operacion */
@@ -170,8 +169,6 @@ control.updateOperation = async (req, res) => {
     amount,
     date_registered,
   };
-
-  console.log(idOperation, concept, amount, date_registered);
 
   try {
     /* Se recupera desde la db la operacion a actualizar */

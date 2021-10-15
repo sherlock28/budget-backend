@@ -77,7 +77,7 @@ _Tomando como ejemplo una ejecución local, dispone de los siguientes endpoints:
       ]
    }
   ```
- - Para el endpoint http://localhost:4000/api/balances/:id un ejemplo de la salida seria la siguiente: 
+ - Para el endpoint ```http://localhost:4000/api/balances/:id``` un ejemplo de la salida seria la siguiente: 
  ```json
   { 
     "data": {

@@ -19,8 +19,8 @@ _Una vez se haya completado la creacion de la basa de datos debe crear el archiv
 ```
 _Por ultimo, ejecutar el comando npm install para instalar las dependencias y a continuacion npm run dev para iniciar el servidor._
 ```
-- `npm install`
-- `npm run dev`
+- npm install
+- npm run dev
 ```
 ## Como usar
 
